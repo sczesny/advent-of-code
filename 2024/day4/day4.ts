@@ -5,39 +5,37 @@ function part1(text: string) {
     const width = lines[0].length, height = lines.length;
     const word = 'XMAS';
     let sum = 0;
-    for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-            if (lines[y][x] == word[0]) {
-                for (const [dx, dy] of [[1, 0], [0, 1], [1, 1], [-1, 0], [0, -1], [-1, -1], [1, -1], [-1, 1]]) {
-                    let found = true;
-                    for (let i = 1; i < word.length; i++) {
-                        const nx = x + i * dx;
-                        const ny = y + i * dy;
-                        if (nx < 0 || nx >= width || ny < 0 || ny >= height || lines[ny][nx] != word[i]) {
-                            found = false;
-                            break;
-                        }
-                    }
-                    if (found) {
-                        sum++;
-                    }
-                }
-            }
-        }
-    }
+    const directions = [[1, 0], [0, 1], [1, 1], [-1, 0], [0, -1], [-1, -1], [1, -1], [-1, 1]];
+    lines.forEach((line, y) => {
+        Array.from(line).forEach((char, x) => {
+            if (char !== word[0]) return;
+            directions.forEach(([dx, dy]) => {
+                if (Array.from({ length: word.length - 1 }).every((_, i) => {
+                    const nx = x + (i + 1) * dx;
+                    const ny = y + (i + 1) * dy;
+                    return nx >= 0 && nx < width && ny >= 0 && ny < height && lines[ny][nx] === word[i + 1];
+                })) sum++;
+            });
+        });
+    });
     return sum;
 }
 
 function part2(text: string) {
     const lines = text.split('\n');
-    const width = lines[0].length, height = lines.length;
-    let sum = 0;
-    for (let y = 1; y < height - 1; y++)
-        for (let x = 1; x < width - 1; x++)
-            if (lines[y][x] == 'A')
-                if ((lines[y - 1][x - 1] == 'M' && lines[y + 1][x + 1] == 'S') || (lines[y - 1][x - 1] == 'S' && lines[y + 1][x + 1] == 'M'))
-                    if ((lines[y - 1][x + 1] == 'M' && lines[y + 1][x - 1] == 'S') || (lines[y - 1][x + 1] == 'S' && lines[y + 1][x - 1] == 'M')) sum++;
-    return sum;
+    return lines.slice(1, -1).reduce((sum, line, y) => {
+        return sum + Array.from(line.slice(1, -1)).reduce((sum, char, x) => {
+            if (char === 'A') {
+                if (
+                    ((lines[y][x] === 'M' && lines[y + 2][x + 2] === 'S') || 
+                    (lines[y][x] === 'S' && lines[y + 2][x + 2] === 'M')) &&
+                    ((lines[y][x + 2] === 'M' && lines[y + 2][x] === 'S') || 
+                    (lines[y][x + 2] === 'S' && lines[y + 2][x] === 'M'))
+                ) return ++sum;
+            }
+            return sum;
+        }, 0);
+    }, 0);
 }
 
 console.log(Deno.args[0] === '2' ? part2(text) : part1(text));
