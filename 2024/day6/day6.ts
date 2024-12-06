@@ -40,6 +40,6 @@ function part2() {
     return count;
 }
 
-const stamp = Date.now();
+const stamp = performance.now();
 console.log(Deno.args[0] === '2' ? part2() : part1());
-console.log('time:', (Date.now() - stamp) / 1000);
+console.log(`Time: ${performance.now() - stamp}ms`);
