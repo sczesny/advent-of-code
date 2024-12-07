@@ -12,10 +12,7 @@ function trace(x: number = sx, y: number = sy, d = [-1, 0]): Set<unknown> | fals
         path.add(state);
         const [nx, ny] = [y + d[0], x + d[1]];
         if (nx < 0 || nx >= grid.length || ny < 0 || ny >= grid[0].length) break;
-        if (grid[nx][ny] === '#') {
-            d = [d[1], -d[0]];
-            confirm;
-        } else [y, x] = [nx, ny];
+        grid[nx][ny] === '#' ? (d = [d[1], -d[0]]) : ([y, x] = [nx, ny]);
     }
     return path;
 }
